@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from collections.abc import Generator
 from app.core.config import settings
+from sqlalchemy.orm import Session
 
 engine = create_engine(
     settings.database_url,
