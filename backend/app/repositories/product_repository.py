@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from app.models.product import Product
 from app.schemas.product import ProductCreate
+from datetime import datetime, UTC
 
 
 class ProductRepository:
@@ -10,7 +11,9 @@ class ProductRepository:
         self.session = session
 
     def get_all(self) -> list[Product]:
-        stmt = select(Product)
+        stmt = select(Product).where(
+            Product.deleted_at.is_(None)
+        )
 
         result = self.session.execute(stmt)
 
@@ -27,6 +30,46 @@ class ProductRepository:
         )
 
         self.session.add(product)
+        self.session.commit()
+        self.session.refresh(product)
+
+        return product
+
+    def get_by_id(
+        self,
+        product_id: int
+    ) -> Product | None:
+
+        stmt = select(Product).where(
+            Product.id == product_id,
+            Product.deleted_at.is_(None)
+        )
+
+        result = self.session.execute(stmt)
+
+        return result.scalar_one_or_none()
+
+    def update(
+        self,
+        product: Product,
+        data: dict
+    ) -> Product:
+
+        for field, value in data.items():
+            setattr(product, field, value)
+
+        self.session.commit()
+        self.session.refresh(product)
+
+        return product
+
+    def delete(
+        self,
+        product: Product,
+    ):
+
+        product.deleted_at = datetime.now(UTC)
+
         self.session.commit()
         self.session.refresh(product)
 

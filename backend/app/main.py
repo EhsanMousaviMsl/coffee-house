@@ -3,7 +3,7 @@ from app.core.config import settings
 from app import models
 from app.api.v1.products import router as product_router
 from fastapi.responses import JSONResponse
-from app.core.exceptions import CategoryNotFoundError
+from app.core.exceptions import AppException, CategoryNotFoundError
 
 
 app = FastAPI(title=settings.app_name, version=settings.app_version)
@@ -13,14 +13,15 @@ app.include_router(
     prefix="/api/v1",
 )
 
-@app.exception_handler(CategoryNotFoundError)
-async def category_not_found_handler(
+@app.exception_handler(AppException)
+async def app_exception_handler(
     request: Request,
-    exc: CategoryNotFoundError,
+    exc: AppException,
 ):
     return JSONResponse(
-        status_code=404,
+        status_code=exc.status_code,
         content={
-            "detail": str(exc),
+            "error": exc.error_code,
+            "message": exc.message,
         },
     )
