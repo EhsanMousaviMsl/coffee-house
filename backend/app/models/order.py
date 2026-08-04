@@ -3,7 +3,7 @@ from enum import Enum
 from decimal import Decimal
 
 from sqlalchemy import Enum as SQLEnum, Numeric
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.db.mixins import SoftDeleteMixin, TimestampMixin
@@ -32,3 +32,8 @@ class Order(Base, TimestampMixin, SoftDeleteMixin):
         nullable=False,
         default=0,
     )
+
+    items = relationship(
+    "OrderItem",
+    back_populates="order",
+)
