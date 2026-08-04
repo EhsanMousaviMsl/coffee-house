@@ -1,7 +1,7 @@
 from decimal import Decimal
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 class ProductBase(BaseModel):
     name: str
@@ -10,6 +10,7 @@ class ProductBase(BaseModel):
     category_id: int
     image_url: str | None = None
     available: bool = True
+    inventory: int = Field(default=0, ge=0)
 
 class ProductCreate(ProductBase):
     pass
@@ -21,6 +22,7 @@ class ProductUpdate(BaseModel):
     category_id: int | None = None
     image_url: str | None = None
     available: bool | None = None
+    inventory: int | None = Field(default=None, ge=0)
 
 class ProductResponse(ProductBase):
     id: int

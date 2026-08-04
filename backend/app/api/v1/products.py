@@ -1,10 +1,11 @@
 from fastapi import APIRouter, Depends, status
 from app.dependencies.products import get_product_service
-from app.schemas.product import ProductCreate, ProductResponse
+from app.schemas.product import( 
+    ProductCreate, 
+    ProductResponse, 
+    ProductUpdate
+)
 from app.services.product_service import ProductService
-from app.schemas.product import ProductResponse
-from app.schemas.product import ProductUpdate
-from fastapi import status
 
 
 router = APIRouter(

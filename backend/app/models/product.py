@@ -22,6 +22,11 @@ class Product(Base, TimestampMixin, SoftDeleteMixin):
 
     image_url: Mapped[str | None]
 
+    inventory: Mapped[int] = mapped_column(
+    nullable=False,
+    default=0,
+)
+
     available: Mapped[bool] = mapped_column(
         Boolean,
         default=True,

@@ -27,3 +27,22 @@ class ProductNotFoundError(AppException):
         super().__init__(
             f"Product with id {product_id} not found"
         )
+
+class CategoryAlreadyExistsError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "CATEGORY_ALREADY_EXISTS"
+
+    def __init__(self, name: str):
+        super().__init__(
+            f"Category '{name}' already exists"
+        )
+
+
+class CategoryHasProductsError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "CATEGORY_HAS_PRODUCTS"
+
+    def __init__(self, category_id: int):
+        super().__init__(
+            f"Cannot delete category {category_id} because it has products"
+        )

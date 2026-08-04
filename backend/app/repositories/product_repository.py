@@ -74,3 +74,17 @@ class ProductRepository:
         self.session.refresh(product)
 
         return product
+
+    def exists_by_category_id(
+        self,
+        category_id: int,
+    ) -> bool:
+
+        stmt = select(Product.id).where(
+            Product.category_id == category_id,
+            Product.deleted_at.is_(None),
+        ).limit(1)
+
+        result = self.session.execute(stmt)
+
+        return result.scalar_one_or_none() is not None
