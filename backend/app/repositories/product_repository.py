@@ -27,6 +27,7 @@ class ProductRepository:
             image_url=data.image_url,
             available=data.available,
             category_id=data.category_id,
+            inventory=data.inventory
         )
 
         self.session.add(product)
@@ -88,3 +89,14 @@ class ProductRepository:
         result = self.session.execute(stmt)
 
         return result.scalar_one_or_none() is not None
+    
+    def decrease_inventory(
+        self,
+        product: Product,
+        quantity: int,
+    ) -> Product:
+        product.inventory -= quantity
+
+        self.session.flush()
+
+        return product

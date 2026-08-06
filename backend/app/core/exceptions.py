@@ -46,3 +46,28 @@ class CategoryHasProductsError(AppException):
         super().__init__(
             f"Cannot delete category {category_id} because it has products"
         )
+
+class ProductUnavailableError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "PRODUCT_UNAVAILABLE"
+
+    def __init__(self, product_id: int):
+        super().__init__(
+            f"Product with id {product_id} is not available"
+        )
+
+
+class InsufficientInventoryError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "INSUFFICIENT_INVENTORY"
+
+    def __init__(
+        self,
+        product_id: int,
+        requested: int,
+        available: int,
+    ):
+        super().__init__(
+            f"Product with id {product_id} has insufficient inventory: "
+            f"requested {requested}, available {available}"
+        )
