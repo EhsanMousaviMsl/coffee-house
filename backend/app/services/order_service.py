@@ -1,9 +1,9 @@
 from decimal import Decimal
-
 from sqlalchemy.orm import Session
 
 from app.core.exceptions import (
     InsufficientInventoryError,
+    OrderNotFoundError,
     ProductNotFoundError,
     ProductUnavailableError,
 )
@@ -51,7 +51,7 @@ class OrderService:
             for product_id, quantity in quantities.items():
 
                 # 1. Find product
-                product = self.product_repository.get_by_id(
+                product = self.product_repository.get_by_id_for_update(
                     product_id
                 )
 
@@ -59,7 +59,7 @@ class OrderService:
                     raise ProductNotFoundError(
                         product_id
                     )
-
+                
                 # 2. Check availability
                 if not product.available:
                     raise ProductUnavailableError(
@@ -110,3 +110,21 @@ class OrderService:
         except Exception:
             self.db.rollback()
             raise
+
+
+    def get_all_orders(self) -> list[Order]:
+        return self.order_repository.get_all()
+    
+    def get_order_by_id(
+        self,
+        order_id: int,
+    ) -> Order:
+
+        order = self.order_repository.get_by_id(
+            order_id
+        )
+
+        if order is None:
+            raise OrderNotFoundError(order_id)
+
+        return order

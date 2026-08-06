@@ -49,6 +49,24 @@ class ProductRepository:
         result = self.session.execute(stmt)
 
         return result.scalar_one_or_none()
+    
+    def get_by_id_for_update(
+        self,
+        product_id: int,
+    ) -> Product | None:
+
+        stmt = (
+            select(Product)
+            .where(
+                Product.id == product_id,
+                Product.deleted_at.is_(None),
+            )
+            .with_for_update()
+        )
+
+        result = self.session.execute(stmt)
+
+        return result.scalar_one_or_none()
 
     def update(
         self,

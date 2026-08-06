@@ -10,6 +10,30 @@ router = APIRouter(
     tags=["Orders"],
 )
 
+@router.get(
+    "/",
+    response_model=list[OrderResponse],
+)
+def get_orders(
+    service: OrderService = Depends(
+        get_order_service
+    ),
+):
+    return service.get_all_orders()
+
+
+@router.get(
+    "/{order_id}",
+    response_model=OrderResponse,
+)
+def get_order(
+    order_id: int,
+    service: OrderService = Depends(
+        get_order_service
+    ),
+):
+    return service.get_order_by_id(order_id)
+
 
 @router.post(
     "/",
@@ -21,3 +45,4 @@ def create_order(
     service: OrderService = Depends(get_order_service),
 ):
     return service.create_order(data)
+

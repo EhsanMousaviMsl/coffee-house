@@ -34,9 +34,9 @@ class ProductService:
         return self.product_repository.create(data)
 
     def get_product_by_id(
-    self,
-    product_id: int
-):
+        self,
+        product_id: int
+    ):
 
         product = self.product_repository.get_by_id(
             product_id

@@ -71,3 +71,12 @@ class InsufficientInventoryError(AppException):
             f"Product with id {product_id} has insufficient inventory: "
             f"requested {requested}, available {available}"
         )
+
+class OrderNotFoundError(AppException):
+    status_code = HTTPStatus.NOT_FOUND
+    error_code = "ORDER_NOT_FOUND"
+
+    def __init__(self, order_id: int):
+        super().__init__(
+            f"Order with id {order_id} not found"
+        )
