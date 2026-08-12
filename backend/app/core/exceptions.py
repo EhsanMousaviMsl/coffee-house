@@ -80,3 +80,92 @@ class OrderNotFoundError(AppException):
         super().__init__(
             f"Order with id {order_id} not found"
         )
+
+class OrderAlreadyCancelledError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "ORDER_ALREADY_CANCELLED"
+
+    def __init__(self, order_id: int):
+        super().__init__(
+            f"Order {order_id} is already cancelled"
+        )
+
+class OrderCannotBeCancelledError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "ORDER_CANNOT_BE_CANCELLED"
+
+    def __init__(
+        self,
+        order_id: int,
+        status: str,
+    ):
+        super().__init__(
+            f"Order {order_id} cannot be cancelled "
+            f"because its status is {status}"
+        )
+
+class OrderCannotBeConfirmedError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "ORDER_CANNOT_BE_CONFIRMED"
+
+    def __init__(
+        self,
+        order_id: int,
+        status: str,
+    ):
+        super().__init__(
+            f"Order {order_id} cannot be confirmed "
+            f"because its status is {status}"
+        )
+
+class PaymentAlreadyExistsError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "PAYMENT_ALREADY_EXISTS"
+
+    def __init__(self, order_id: int):
+        super().__init__(
+            f"Order {order_id} already has a pending payment"
+        )
+
+
+class OrderCannotBePaidError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "ORDER_CANNOT_BE_PAID"
+
+    def __init__(
+        self,
+        order_id: int,
+        status: str,
+    ):
+        super().__init__(
+            f"Order {order_id} cannot be paid "
+            f"because its status is {status}"
+        )
+
+class PaymentNotFoundError(AppException):
+    status_code = HTTPStatus.NOT_FOUND
+    error_code = "PAYMENT_NOT_FOUND"
+
+    def __init__(self, payment_id: int):
+        super().__init__(
+            f"Payment with id {payment_id} not found"
+        )
+
+
+class PaymentAlreadyFailedError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "PAYMENT_ALREADY_FAILED"
+
+    def __init__(self, payment_id: int):
+        super().__init__(
+            f"Payment {payment_id} has already failed"
+        )
+
+class PaymentAlreadySucceededError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "PAYMENT_ALREADY_SUCCEEDED"
+
+    def __init__(self, payment_id: int):
+        super().__init__(
+            f"Payment {payment_id} has already succeeded"
+        )

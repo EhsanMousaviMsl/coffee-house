@@ -44,3 +44,7 @@ class OrderRepository:
         result = self.db.execute(stmt)
 
         return result.scalar_one_or_none()
+    
+    def update(self, order: Order) -> Order:
+        self.db.flush()
+        return order

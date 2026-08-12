@@ -46,3 +46,26 @@ def create_order(
 ):
     return service.create_order(data)
 
+@router.post(
+    "/{order_id}/cancel",
+    response_model=OrderResponse,
+)
+def cancel_order(
+    order_id: int,
+    service: OrderService = Depends(
+        get_order_service
+    ),
+):
+    return service.cancel_order(order_id)
+
+@router.post(
+    "/{order_id}/confirm",
+    response_model=OrderResponse,
+)
+def confirm_order(
+    order_id: int,
+    service: OrderService = Depends(
+        get_order_service
+    ),
+):
+    return service.confirm_order(order_id)

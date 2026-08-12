@@ -1,5 +1,4 @@
 from enum import Enum
-
 from decimal import Decimal
 
 from sqlalchemy import Enum as SQLEnum, Numeric
@@ -7,6 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base
 from app.db.mixins import SoftDeleteMixin, TimestampMixin
+
 
 class OrderStatus(str, Enum):
     PENDING = "pending"
@@ -34,6 +34,11 @@ class Order(Base, TimestampMixin, SoftDeleteMixin):
     )
 
     items = relationship(
-    "OrderItem",
-    back_populates="order",
-)
+        "OrderItem",
+        back_populates="order",
+    )
+
+    payments = relationship(
+        "Payment",
+        back_populates="order",
+    )

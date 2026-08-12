@@ -6,8 +6,11 @@ from app.core.exceptions import (
     OrderNotFoundError,
     ProductNotFoundError,
     ProductUnavailableError,
+    OrderAlreadyCancelledError,
+    OrderCannotBeCancelledError,
+    OrderCannotBeConfirmedError,
 )
-from app.models.order import Order
+from app.models.order import Order, OrderStatus
 from app.models.order_item import OrderItem
 from app.repositories.order_repository import OrderRepository
 from app.repositories.product_repository import ProductRepository
@@ -128,3 +131,100 @@ class OrderService:
             raise OrderNotFoundError(order_id)
 
         return order
+    
+    def cancel_order(
+        self,
+        order_id: int,
+    ) -> Order:
+
+        try:
+            # 1. Find order
+            order = self.order_repository.get_by_id(
+                order_id
+            )
+
+            if order is None:
+                raise OrderNotFoundError(order_id)
+
+            # 2. Check status
+            if order.status == OrderStatus.CANCELLED:
+                raise OrderAlreadyCancelledError(order_id)
+
+            if not order.can_be_cancelled():
+                raise OrderCannotBeCancelledError(
+                    order_id,
+                    order.status.value,
+                )           
+
+            # 3. Restore inventory
+            for item in order.items:
+
+                product = self.product_repository.get_by_id_for_update(
+                    item.product_id
+                )
+
+                if product is None:
+                    raise ProductNotFoundError(
+                        item.product_id
+                    )
+
+                self.product_repository.increase_inventory(
+                    product,
+                    item.quantity,
+                )
+
+            # 4. Change order status
+            order.status = OrderStatus.CANCELLED
+
+            self.order_repository.update(order)
+
+            # 5. Commit everything
+            self.db.commit()
+
+            # 6. Refresh
+            self.db.refresh(order)
+
+            return order
+
+        except Exception:
+            self.db.rollback()
+            raise
+
+
+    def confirm_order(
+        self,
+        order_id: int,
+    ) -> Order:
+
+        try:
+            # 1. Find order
+            order = self.order_repository.get_by_id(
+                order_id
+            )
+
+            if order is None:
+                raise OrderNotFoundError(order_id)
+
+            # 2. Order must be pending
+            if not order.can_be_confirmed():
+                raise OrderCannotBeConfirmedError(
+                    order_id,
+                    order.status.value,
+            )
+
+            # 3. Change status
+            order.status = OrderStatus.CONFIRMED
+
+            self.order_repository.update(order)
+
+            # 4. Commit
+            self.db.commit()
+
+            # 5. Refresh
+            self.db.refresh(order)
+
+            return order
+
+        except Exception:
+            self.db.rollback()
+            raise

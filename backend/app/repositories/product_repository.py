@@ -118,3 +118,15 @@ class ProductRepository:
         self.session.flush()
 
         return product
+    
+    def increase_inventory(
+        self,
+        product: Product,
+        quantity: int,
+    ) -> Product:
+
+        product.inventory += quantity
+
+        self.session.flush()
+
+        return product
