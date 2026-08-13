@@ -169,3 +169,33 @@ class PaymentAlreadySucceededError(AppException):
         super().__init__(
             f"Payment {payment_id} has already succeeded"
         )
+
+class PaymentAmountMismatchError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "PAYMENT_AMOUNT_MISMATCH"
+
+    def __init__(
+        self,
+        payment_id: int,
+        expected: str,
+        received: str,
+    ):
+        super().__init__(
+            f"Payment {payment_id} amount mismatch: "
+            f"expected {expected}, received {received}"
+        )
+
+
+class PaymentWebhookInvalidEventError(AppException):
+    status_code = HTTPStatus.CONFLICT
+    error_code = "PAYMENT_WEBHOOK_INVALID_EVENT"
+
+    def __init__(
+        self,
+        event_type: str,
+        payment_id: int,
+    ):
+        super().__init__(
+            f"Webhook event '{event_type}' cannot be applied "
+            f"to payment {payment_id}"
+        )
