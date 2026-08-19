@@ -6,7 +6,11 @@ from app.schemas.payment import (
     PaymentResponse,
 )
 from app.services.payment_service import PaymentService
-
+from app.dependencies.payment_webhooks import (
+    get_payment_webhook_service,
+)
+from app.schemas.payment_webhook import PaymentWebhookEventType
+from app.services.payment_webhook_service import PaymentWebhookService
 
 router = APIRouter(
     prefix="/payments",
@@ -55,4 +59,34 @@ def fail_payment(
 ):
     return service.fail_payment(
         payment_id
+    )
+
+@router.post(
+    "/{payment_id}/simulate-success",
+    response_model=PaymentResponse,
+)
+def simulate_payment_success(
+    payment_id: int,
+    service: PaymentWebhookService = Depends(
+        get_payment_webhook_service
+    ),
+):
+    return service.simulate(
+        payment_id=payment_id,
+        event_type=PaymentWebhookEventType.PAYMENT_SUCCEEDED,
+    )
+
+@router.post(
+    "/{payment_id}/simulate-failure",
+    response_model=PaymentResponse,
+)
+def simulate_payment_failure(
+    payment_id: int,
+    service: PaymentWebhookService = Depends(
+        get_payment_webhook_service
+    ),
+):
+    return service.simulate(
+        payment_id=payment_id,
+        event_type=PaymentWebhookEventType.PAYMENT_FAILED,
     )

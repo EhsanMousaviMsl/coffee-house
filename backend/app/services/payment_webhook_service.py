@@ -173,3 +173,35 @@ class PaymentWebhookService:
             )
 
         payment.status = PaymentStatus.FAILED
+
+
+    def simulate(
+        self,
+        payment_id: int,
+        event_type: PaymentWebhookEventType,
+    ):
+        payment = self.payment_repository.get_by_id(payment_id)
+
+        if payment is None:
+            raise PaymentNotFoundError(payment_id)
+
+        event_id = f"sim_{payment_id}_{event_type.value}"
+
+        data = PaymentWebhookRequest(
+            event_id=event_id,
+            event_type=event_type,
+            payment_id=payment.id,
+            amount=payment.amount,
+        )
+
+        payload = {
+            "event_id": data.event_id,
+            "event_type": data.event_type.value,
+            "payment_id": data.payment_id,
+            "amount": str(data.amount),
+        }
+
+        return self.process(
+            data=data,
+            payload=payload,
+        )

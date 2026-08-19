@@ -1,10 +1,14 @@
+import json
 from fastapi import APIRouter, Depends, Request, status
+from app.core.config import get_settings
+from app.core.security import verify_webhook_signature
+from app.core.exceptions import InvalidWebhookSignatureError
 
 from app.dependencies.payment_webhooks import (
     get_payment_webhook_service,
 )
 from app.schemas.payment import PaymentResponse
-from app.schemas.payment_webhook import PaymentWebhookRequest
+from app.schemas.payment_webhook import PaymentWebhookRequest, PaymentWebhookResponse
 from app.services.payment_webhook_service import (
     PaymentWebhookService,
 )
@@ -18,7 +22,7 @@ router = APIRouter(
 
 @router.post(
     "/payment",
-    response_model=PaymentResponse,
+    response_model=PaymentWebhookResponse,
     status_code=status.HTTP_200_OK,
 )
 async def payment_webhook(
@@ -28,9 +32,32 @@ async def payment_webhook(
         get_payment_webhook_service
     ),
 ):
-    payload = await request.json()
+    settings = get_settings()
 
-    return service.process(
+    raw_body = await request.body()
+
+    signature = request.headers.get(
+        "X-Webhook-Signature"
+    )
+
+    if signature is None:
+        raise InvalidWebhookSignatureError()
+
+    if not verify_webhook_signature(
+        payload=raw_body,
+        signature=signature,
+        secret=settings.payment_webhook_secret,
+    ):
+        raise InvalidWebhookSignatureError()
+
+    payload = json.loads(raw_body)
+
+    service.process(
         data=data,
         payload=payload,
     )
+
+    return PaymentWebhookResponse(
+        received=True,
+    )
+

@@ -42,3 +42,9 @@ class Order(Base, TimestampMixin, SoftDeleteMixin):
         "Payment",
         back_populates="order",
     )
+
+    def can_be_cancelled(self) -> bool:
+        return self.status == OrderStatus.PENDING
+    
+    def can_be_confirmed(self) -> bool:
+        return self.status == OrderStatus.PENDING

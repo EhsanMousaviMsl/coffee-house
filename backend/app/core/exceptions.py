@@ -199,3 +199,12 @@ class PaymentWebhookInvalidEventError(AppException):
             f"Webhook event '{event_type}' cannot be applied "
             f"to payment {payment_id}"
         )
+
+class InvalidWebhookSignatureError(AppException):
+    status_code = HTTPStatus.UNAUTHORIZED
+    error_code = "INVALID_WEBHOOK_SIGNATURE"
+
+    def __init__(self):
+        super().__init__(
+            "Invalid webhook signature"
+        )

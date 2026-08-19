@@ -14,8 +14,10 @@ class Settings(BaseSettings):
     database_password: str = "coffee_password"
     database_name: str = "coffee_house"
 
+    payment_webhook_secret: str
+
     model_config = SettingsConfigDict(
-        env_file=".env",
+        env_file="../.env",
         extra="ignore",
     )
 
