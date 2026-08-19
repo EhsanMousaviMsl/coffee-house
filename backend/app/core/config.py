@@ -8,11 +8,11 @@ class Settings(BaseSettings):
     app_version: str = "0.1.0"
     environment: str = "development"
 
-    database_host: str = "localhost"
+    database_host: str 
     database_port: int = 5432
-    database_user: str = "coffee_user"
-    database_password: str = "coffee_password"
-    database_name: str = "coffee_house"
+    database_user: str 
+    database_password: str 
+    database_name: str 
 
     payment_webhook_secret: str
 

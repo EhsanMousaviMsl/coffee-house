@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+.venv/
+
+# Environment variables
+.env
+.env.*
+
+!.env.example
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Type checking
+.pyright/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
