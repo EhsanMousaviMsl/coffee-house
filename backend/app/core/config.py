@@ -16,6 +16,11 @@ class Settings(BaseSettings):
 
     payment_webhook_secret: str
 
+    cors_origins: str = (
+        "http://localhost:5174,"
+        "http://127.0.0.1:5174"
+    )
+
     model_config = SettingsConfigDict(
         env_file="../.env",
         extra="ignore",
